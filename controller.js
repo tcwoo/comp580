@@ -1,12 +1,19 @@
 
+var JOYSTICK_DIFFERENTIAL_THRESHOLD = 0.01;
+
 function Controller() {
 	var self = this;
 	self.buttonListener = function() {};
 	self.joystickListener = function() {};
 	self.lastButtonState = {};
 	self.lastAxisState = {};
+	self.primaryActionButton = null;
 
 	// Public functions
+
+	self.isPressed = function(button) {
+		return self.lastButtonState[button];
+	}
 
 	self.setButtonListener = function(callback) {
 		self.buttonListener = callback;
