@@ -9,13 +9,12 @@ function Game() {
 	var self = this;
 	self.instrument = INSTRUMENTS[0];
 	self.track = TRACKS[0];
-	self.location = LOCATIONS.MENU;
 	self.mode = MODES.MANUAL;
+	self.location = null;
 
 	// Public functions
 
 	self.start = function() {
-		debug('Game started');
 		// Initialize controller and bindings
 		var controller = new Controller();
 		controller.setButtonListener(function(event, button) {
@@ -30,36 +29,45 @@ function Game() {
 		// Listen with a delay of 5ms
 		controller.listen(5);
 
-		// Speak instructions
-		speak(INSTRUCTIONS);
+		// Go to main menu
+		setLocation(LOCATIONS.MENU);
 	}
 
 	// Private functions
 
-	function debug(msg) {
-		var location = self.location == LOCATIONS.MENU ? 'MENU' : 'JAMMING';
-		var instrument = self.instrument.name;
-		var msg = sprintf('%s; location = %s; instrument = %s', msg, location, instrument);
-		$('body').prepend('<p>' + msg + '</p>');
-	}
-
 	function speak(text, callback) {
+		// Text to speech
 		window.speechSynthesis.cancel();
 		var msg = new SpeechSynthesisUtterance(text);
 		msg.volume = SPEECH_VOLUME;
+		msg.onend = function() { if (callback) callback(); }
+
+		// Hack to make 'onend' fire
 		msg.onstart = function() { console.log('required'); }
-		msg.onend = function() { console.log('required'); if (callback) callback(); }
 		setTimeout(function() { window.speechSynthesis.speak(msg); }, 10);
+	}
+
+	function setLocation(location) {
+		self.track.stop();
+		self.location = location;
+
+		switch (location) {
+			case LOCATIONS.MENU:
+				speak(INSTRUCTIONS);
+				break;
+			case LOCATIONS.JAMMING:
+				var msg = sprintf('You selected "%s". Have fun jamming!', self.track.name);
+				speak(msg, function() {
+					self.track.play();
+				});
+				break;
+		}
 	}
 
 	function handleMenuEvent(button) {
 		switch (button) {
 			case BUTTONS.X:
-				self.location = LOCATIONS.JAMMING;
-				speak(sprintf('You selected "%s". Have fun jamming!', self.track.name), function() {
-					self.track.play();
-					debug('Selected track');
-				});
+				setLocation(LOCATIONS.JAMMING);
 				break;
 			case BUTTONS.L1:
 				// Previous track
@@ -89,7 +97,6 @@ function Game() {
 			case BUTTONS.DPAD_LEFT:
 			case BUTTONS.DPAD_RIGHT:
 				// Play note
-				debug('Playing note');
 				if (self.mode == MODES.MANUAL) self.instrument.playNote(button, self.track);
 				else self.instrument.playRiff(button, self.track);
 				break;
@@ -98,19 +105,16 @@ function Game() {
 				var index = INSTRUMENTS.indexOf(self.instrument);
 				var newIndex = (index - 1 + INSTRUMENTS.length) % INSTRUMENTS.length;
 				self.instrument = INSTRUMENTS[newIndex];
-				debug('Switched to ' + self.instrument.name);
 				break;
 			case BUTTONS.R1:
 				// Next instrument
 				var index = INSTRUMENTS.indexOf(self.instrument);
 				var newIndex = (index + 1) % INSTRUMENTS.length;
 				self.instrument = INSTRUMENTS[newIndex];
-				debug('Switched to ' + self.instrument.name);
 				break;
 			case BUTTONS.START:
 				// Back to menu
-				self.location = LOCATIONS.MENU;
-				debug('Back to menu');
+				setLocation(LOCATIONS.MENU);
 				break;
 			case BUTTONS.SELECT:
 				// Toggle manual/automatic mode

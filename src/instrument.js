@@ -37,8 +37,10 @@ function Instrument(name) {
 
 	function fadeOut(audio) {
 		var fadeInterval = setInterval(function() {
-			if (audio.volume == 0.0) clearInterval(fadeInterval);
-			else if (audio.volume <= 0.05) audio.volume = 0;
+			if (audio.volume == 0.0) {
+				clearInterval(fadeInterval);
+				self.audio.stop();
+			} else if (audio.volume <= 0.05) audio.volume = 0;
 			else audio.volume -= 0.05;
 		}, 10);
 	}
