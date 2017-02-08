@@ -1,24 +1,29 @@
 
-function Instrument(name, layer) {
+var INSTRUMENTS = [
+	new Instrument('guitar'),
+	new Instrument('saxophone'),
+	new Instrument('piano')
+];
+
+function Instrument(name) {
 	var self = this;
 	self.name = name;
 	self.volume = 0.5;
-	self.pan = 0;
-	self.layer = layer;
 	self.audio = null;
 	self.lastNote = null;
 
 	// Public functions
 
-	self.playNote = function(button) {
-		// If layering is turned off, fade out sound
-		var note = button == BUTTONS.R1 ? 8 : button % 8;
-		if (! self.layer && self.audio) {
-			// Play a little longer, then stop
-			var audio = self.audio;
-			fadeOut(audio);
-		}
+	self.playAutomaticNote = function() {
+		// Fade out last note
+		if (self.audio) fadeOut(self.audio);
+	}
 
+	self.playManualNote = function(button) {
+		// Fade out last note
+		if (self.audio) fadeOut(self.audio);
+
+		// Play new note
 		var src = sprintf("audio/%s-%d.mp3", self.name, note);
 		self.audio = new Audio(src);
 		self.audio.volume = self.volume;
