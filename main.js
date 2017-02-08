@@ -3,6 +3,7 @@
 var INSTRUCTIONS = 'Welcome to Synesthesia Maker. Press the left/right buttons to cycle through the available tracks, then press the bottom button with your right thumb to select a track.';
 var LOCATIONS = { MENU: 0, JAMMING: 1 };
 var MODES = { AUTOMATIC: 0, MANUAL: 1 };
+var SPEECH_VOLUME = 0.1;
 
 function Game() {
 	var self = this;
@@ -45,8 +46,9 @@ function Game() {
 	function speak(text, callback) {
 		window.speechSynthesis.cancel();
 		var msg = new SpeechSynthesisUtterance(text);
+		msg.volume = SPEECH_VOLUME;
 		msg.onstart = function() { console.log('required'); }
-		msg.onend = function() { console.log('required'); callback(); }
+		msg.onend = function() { console.log('required'); if (callback) callback(); }
 		setTimeout(function() { window.speechSynthesis.speak(msg); }, 10);
 	}
 

@@ -8,7 +8,7 @@ var INSTRUMENTS = [
 function Instrument(name) {
 	var self = this;
 	self.name = name;
-	self.volume = 0.5;
+	self.volume = 1;
 	self.audio = null;
 	self.lastNote = null;
 
@@ -25,7 +25,8 @@ function Instrument(name) {
 
 		// Play new note
 		var note = track.translate(button);
-		var src = sprintf("audio/notes/%s/%d.mp3", self.name, note);
+		var src = sprintf("audio/notes/%s/%02d.mp3", self.name, note + 1);
+		console.log(src);
 		self.audio = new Audio(src);
 		self.audio.volume = self.volume;
 		self.audio.play();

@@ -1,4 +1,14 @@
 
+var NOTES = {};
+NOTES[BUTTONS.X] = 0;
+NOTES[BUTTONS.SQUARE] = 1;
+NOTES[BUTTONS.CIRCLE] = 2;
+NOTES[BUTTONS.TRIANGLE] = 3;
+NOTES[BUTTONS.DPAD_DOWN] = 4;
+NOTES[BUTTONS.DPAD_LEFT] = 5;
+NOTES[BUTTONS.DPAD_RIGHT] = 6;
+NOTES[BUTTONS.DPAD_UP] = 7;
+
 var SCALES = {
 	BLUES: [0, 3, 5, 6, 7, 10, 11, 12]
 }
@@ -8,16 +18,16 @@ var RIFFS = {
 }
 
 var TRACKS = [
-	new Track('blues', SCALES.BLUES, RIFFS.BLUES)
+	new Track('blues', SCALES.BLUES, RIFFS.BLUES, 0.15)
 ];
 
-function Track(name, scale, riffs) {
+function Track(name, scale, riffs, volume) {
 	var self = this;
 	self.name = name;
-	self.volume = 0.5;
-	self.audio = null;
 	self.scale = scale;
 	self.riffs = riffs;
+	self.volume = volume;
+	self.audio = null;
 
 	// Public functions
 
@@ -36,7 +46,7 @@ function Track(name, scale, riffs) {
 
 	self.translate = function(button) {
 		// Translate a button to a note depending on scale
-		var index = button == BUTTONS.R1 ? 8 : button % 8;
+		var index = NOTES[button];
 		return self.scale[index];
 	}
 
