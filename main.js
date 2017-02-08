@@ -1,6 +1,7 @@
 
 // Constants
-var INSTRUCTIONS = 'Welcome to Synesthesia Maker. Press the left/right buttons to cycle through the available tracks, then press the bottom button with your right thumb to select a track.';
+var INSTRUCTIONS_MENU = 'Welcome to Synesthesia Maker. Press the left/right buttons to cycle through the available tracks, then press the bottom button with your right thumb to select a track.';
+var INSTRUCTIONS_JAMMING = 'You selected "%s". Have fun jamming!';
 var LOCATIONS = { MENU: 0, JAMMING: 1 };
 var MODES = { AUTOMATIC: 0, MANUAL: 1 };
 var SPEECH_VOLUME = 0.1;
@@ -53,10 +54,10 @@ function Game() {
 
 		switch (location) {
 			case LOCATIONS.MENU:
-				speak(INSTRUCTIONS);
+				speak(INSTRUCTIONS_MENU);
 				break;
 			case LOCATIONS.JAMMING:
-				var msg = sprintf('You selected "%s". Have fun jamming!', self.track.name);
+				var msg = sprintf(INSTRUCTIONS_JAMMING, self.track.name);
 				speak(msg, function() {
 					self.track.play();
 				});
