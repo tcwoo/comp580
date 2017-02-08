@@ -14,17 +14,18 @@ function Instrument(name) {
 
 	// Public functions
 
-	self.playAutomaticNote = function() {
+	self.playRiff = function(button, track) {
 		// Fade out last note
 		if (self.audio) fadeOut(self.audio);
 	}
 
-	self.playManualNote = function(button) {
+	self.playNote = function(button, track) {
 		// Fade out last note
 		if (self.audio) fadeOut(self.audio);
 
 		// Play new note
-		var src = sprintf("audio/%s-%d.mp3", self.name, note);
+		var note = track.translate(button);
+		var src = sprintf("audio/notes/%s/%d.mp3", self.name, note);
 		self.audio = new Audio(src);
 		self.audio.volume = self.volume;
 		self.audio.play();
@@ -35,8 +36,9 @@ function Instrument(name) {
 
 	function fadeOut(audio) {
 		var fadeInterval = setInterval(function() {
-			audio.volume -= 0.05;
-			if (audio.volume <= 0) clearInterval(fadeInterval);
+			if (audio.volume == 0.0) clearInterval(fadeInterval);
+			else if (audio.volume <= 0.05) audio.volume = 0;
+			else audio.volume -= 0.05;
 		}, 10);
 	}
 }

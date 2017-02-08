@@ -1,13 +1,23 @@
 
+var SCALES = {
+	BLUES: [0, 3, 5, 6, 7, 10, 11, 12]
+}
+
+var RIFFS = {
+	BLUES: []
+}
+
 var TRACKS = [
-	new Track('blues')
+	new Track('blues', SCALES.BLUES, RIFFS.BLUES)
 ];
 
-function Track(name) {
+function Track(name, scale, riffs) {
 	var self = this;
 	self.name = name;
 	self.volume = 0.5;
 	self.audio = null;
+	self.scale = scale;
+	self.riffs = riffs;
 
 	// Public functions
 
@@ -24,12 +34,19 @@ function Track(name) {
 		fadeOut(self.audio);
 	}
 
+	self.translate = function(button) {
+		// Translate a button to a note depending on scale
+		var index = button == BUTTONS.R1 ? 8 : button % 8;
+		return self.scale[index];
+	}
+
 	// Private functions
 
 	function fadeOut(audio) {
 		var fadeInterval = setInterval(function() {
-			audio.volume -= 0.05;
-			if (audio.volume <= 0) clearInterval(fadeInterval);
+			if (audio.volume == 0.0) clearInterval(fadeInterval);
+			else if (audio.volume <= 0.05) audio.volume = 0;
+			else audio.volume -= 0.05;
 		}, 10);
 	}
 }

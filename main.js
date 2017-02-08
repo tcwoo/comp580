@@ -1,5 +1,6 @@
 
 // Constants
+var INSTRUCTIONS = 'Welcome to Synesthesia Maker. Press the left/right buttons to cycle through the available tracks, then press the bottom button with your right thumb to select a track.';
 var LOCATIONS = { MENU: 0, JAMMING: 1 };
 var MODES = { AUTOMATIC: 0, MANUAL: 1 };
 
@@ -29,7 +30,7 @@ function Game() {
 		controller.listen(5);
 
 		// Speak instructions
-		speak('Welcome to Synesthesia Maker. Press the left/right buttons to cycle through the available tracks, then press the bottom right button with your thumb to select a track.')
+		speak(INSTRUCTIONS);
 	}
 
 	// Private functions
@@ -44,28 +45,33 @@ function Game() {
 	function speak(text, callback) {
 		window.speechSynthesis.cancel();
 		var msg = new SpeechSynthesisUtterance(text);
-		msg.onend = callback;
-		window.speechSynthesis.speak(msg);
+		msg.onstart = function() { console.log('required'); }
+		msg.onend = function() { console.log('required'); callback(); }
+		setTimeout(function() { window.speechSynthesis.speak(msg); }, 10);
 	}
 
 	function handleMenuEvent(button) {
 		switch (button) {
 			case BUTTONS.X:
+				self.location = LOCATIONS.JAMMING;
 				speak(sprintf('You selected "%s". Have fun jamming!', self.track.name), function() {
-					self.location = LOCATIONS.JAMMING;
 					self.track.play();
 					debug('Selected track');
 				});
 				break;
 			case BUTTONS.L1:
 				// Previous track
-				// TODO
-				debug('Previous track');
+				var index = TRACKS.indexOf(self.track);
+				var newIndex = (index - 1 + TRACKS.length) % TRACKS.length;
+				self.track = TRACKS[newIndex];
+				speak(self.track.name);
 				break;
 			case BUTTONS.R1:
 				// Next track
-				// TODO
-				debug('Next track');
+				var index = TRACKS.indexOf(self.instrument);
+				var newIndex = (index + 1) % TRACKS.length;
+				self.instrument = TRACKS[newIndex];
+				speak(self.track.name);
 				break;
 		}
 	}
@@ -82,8 +88,8 @@ function Game() {
 			case BUTTONS.DPAD_RIGHT:
 				// Play note
 				debug('Playing note');
-				if (self.mode == MODES.MANUAL) self.instrument.playManualNote(button);
-				else self.instrument.playAutomaticNote();
+				if (self.mode == MODES.MANUAL) self.instrument.playNote(button, self.track);
+				else self.instrument.playRiff(button, self.track);
 				break;
 			case BUTTONS.L1:
 				// Previous instrument
